@@ -46,6 +46,4 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 For API Access, make a .env at root with the following Variable(s):
 
-```bash
 TRAINAPIKEY='{API KEY HERE}'
-```
