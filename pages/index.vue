@@ -2,14 +2,11 @@
 
 <p>Map</p>
 <div id="leafletmap"></div>
-<p v-for="s in schedule">{{ s }}</p>
-
+<p v-for="s in json">{{ s }}</p>
 
 </template>
 
 <script setup lang="ts">
-import { config } from 'process';
-
 
 useHead({
     title: '3Squared',
@@ -31,18 +28,33 @@ useHead({
             src: '/leafletmap.js',
             body: true
         }
-    ]
+    ],
+    
 })
 
-const url = 'https://traindata-stag-api.railsmart.io/api/trains/tiploc/CREWEMD,WLSDEUT,LOWFRMT,WLSDRMT,CARLILE,MOSEUPY,STAFFRD,DONCIGB,THMSLGB,FLXSNGB/2023-02-09 00:00:00/2023-02-09 23:59:59'
+const url = 'https://traindata-stag-api.railsmart.io/api/trains/tiploc/CREWEMD,WLSDEUT,LOWFRMT,WLSDRMT,CARLILE,MOSEUPY,STAFFRD,DONCIGB,THMSLGB,FLXSNGB/2023-02-13 00:00:00/2023-02-13 23:59:59'
 
-const { data: schedule } = await useFetch(
+let { data: schedule } = await useFetch<string>(
     url, {
     headers: {
         'X-ApiVersion': '1',
         'X-ApiKey': useRuntimeConfig().apiKey
     }
 })
+
+let json = JSON.stringify(schedule);
+
+var latlongs = [[51, -1], [51, 0], [51, 1]]
+
+var js = document.createElement('script');
+js.setAttribute('type', 'text/javascript');
+
+latlongs.forEach(latlong => {   
+    js.appendChild(document.createTextNode('L.marker([' + latlong[0] + ', ' + latlong[1] + ']).addTo(map);'))
+})
+
+document.getElementsByTagName('head').item(0).appendChild(js)
+
 
 </script>
 
