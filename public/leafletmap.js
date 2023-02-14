@@ -6,4 +6,8 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 L.tileLayer('https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openrailwaymap.org/">OpenRailWayMap</a>'
+<<<<<<< Updated upstream
 }).addTo(map);
+=======
+}).addTo(map);
+>>>>>>> Stashed changes
