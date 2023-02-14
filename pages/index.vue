@@ -1,10 +1,4 @@
 <template>
-
-<<<<<<< Updated upstream
-<p>Map</p>
-<div id="leafletmap"></div>
-<p v-for="s in json">{{ s }}</p>
-=======
     <div id="map-container">
         <div id="sidebar">
             <h1>Train Information</h1>
@@ -19,11 +13,57 @@
     <footer>
         <p>Copyright &copy; 2023 3Squared</p>
     </footer>
->>>>>>> Stashed changes
-
 </template>
 
 <script setup lang="ts">
+
+
+
+
+const url_schedules = "https://traindata-stag-api.railsmart.io/api/trains/tiploc/CREWEMD,WLSDEUT,LOWFRMT,WLSDRMT,CARLILE,MOSEUPY,STAFFRD,DONCIGB,THMSLGB,FLXSNGB/2023-02-14 00:00:00/2023-02-14 23:59:59";
+const url_trainSchedules = "https://traindata-stag-api.railsmart.io/api/ifmtrains/schedule/"
+const url_liveTrain = "https://traindata-stag-api.railsmart.io/api/ifmtrains/movement/"
+
+let code = ""
+
+await useFetch(url_schedules, {
+    headers: {
+        'X-ApiVersion': '1',
+        'X-ApiKey': useRuntimeConfig().apiKey
+    },
+    onResponse({ response }) {
+
+        const scheduleJSON = JSON.parse(JSON.stringify(response._data)) as Array<Schedule>
+
+        console.log(scheduleJSON)
+
+        scheduleJSON.forEach(async s => {
+            let scheduleId = s.scheduleId
+            let activationId = s.activationId
+
+            let url = url_trainSchedules + activationId + "/" + scheduleId 
+
+            await useFetch(url, {
+                headers: {
+                    "X-ApiVersion": "1",
+                    "X-ApiKey": useRuntimeConfig().apiKey,
+                },
+                onResponse({ response }) {
+                    const trainSchedulesJSON = JSON.parse(JSON.stringify(response._data)) as Array<TrainSchedule>
+            
+                    trainSchedulesJSON.forEach(ts => {
+                        if(ts.latLong)
+                            code += 'L.marker([' + ts.latLong?.latitude + ', ' + ts.latLong?.longitude + ']).addTo(map);'
+                    })
+                }
+            })
+        })
+    }
+})
+
+
+
+
 
 useHead({
     title: '3Squared',
@@ -42,81 +82,19 @@ useHead({
             crossorigin: '',
         },
         {
-<<<<<<< Updated upstream
             src: '/leafletmap.js',
             body: true
-=======
-            src: "/leafletmap.js",
-            body: true,
->>>>>>> Stashed changes
+        },
+        {
+            children: code
         }
     ],
     
 })
 
-<<<<<<< Updated upstream
-const url = 'https://traindata-stag-api.railsmart.io/api/trains/tiploc/CREWEMD,WLSDEUT,LOWFRMT,WLSDRMT,CARLILE,MOSEUPY,STAFFRD,DONCIGB,THMSLGB,FLXSNGB/2023-02-13 00:00:00/2023-02-13 23:59:59'
-
-let { data: schedule } = await useFetch<string>(
-    url, {
-=======
-
-const url_schedules = "https://traindata-stag-api.railsmart.io/api/trains/tiploc/CREWEMD,WLSDEUT,LOWFRMT,WLSDRMT,CARLILE,MOSEUPY,STAFFRD,DONCIGB,THMSLGB,FLXSNGB/2023-02-14 00:00:00/2023-02-14 23:59:59";
-const url_trainSchedules = "https://traindata-stag-api.railsmart.io/api/ifmtrains/schedule/"
-const url_liveTrain = "https://traindata-stag-api.railsmart.io/api/ifmtrains/movement/"
-
-
-const { data: schedule } = await useFetch(url_schedules, {
->>>>>>> Stashed changes
-    headers: {
-        'X-ApiVersion': '1',
-        'X-ApiKey': useRuntimeConfig().apiKey
-    }
-})
-
-let json = JSON.stringify(schedule);
-
-var latlongs = [[51, -1], [51, 0], [51, 1]]
-
-var js = document.createElement('script');
-js.setAttribute('type', 'text/javascript');
-
-latlongs.forEach(latlong => {   
-    js.appendChild(document.createTextNode('L.marker([' + latlong[0] + ', ' + latlong[1] + ']).addTo(map);'))
-})
-
-document.getElementsByTagName('head').item(0).appendChild(js)
-
-
-const scheduleJSON = JSON.parse(JSON.stringify(schedule.value)) as Array<Schedule>
-
-let trainSchedules: TrainSchedule[][] = []
-
-scheduleJSON.forEach(async s => {
-    let scheduleId = s.scheduleId
-    let activationId = s.activationId
-
-    let url = url_trainSchedules + activationId + "/" + scheduleId 
-
-    const { data: trainSchedule } = await useFetch(url, {
-        headers: {
-            "X-ApiVersion": "1",
-            "X-ApiKey": useRuntimeConfig().apiKey,
-        }
-    })
-
-    const trainSchedulesJSON = JSON.parse(JSON.stringify(trainSchedule.value)) as Array<TrainSchedule>
-    trainSchedules.push(trainSchedulesJSON)
-})
-
-
-
 </script>
 
 <style scoped>
-<<<<<<< Updated upstream
-    #leafletmap { height: 500px; }
-=======
 html,body {height:100%} 
 footer {
     background-color: #f9f9f9;
@@ -203,5 +181,4 @@ nav a:hover:before {
     transform: scaleX(1);
     transform-origin: left;
 }
->>>>>>> Stashed changes
 </style>
