@@ -24,6 +24,8 @@
     <script src="leafletmap.js"></script>
     <script>
 
+      let currentTrainRoute = ""
+
       (function () {
 
         async function getData(url) {
@@ -32,17 +34,23 @@
           return json;
         }
 
-        let api_schedule = "http://localhost:3000/api/schedule";
         let api_trainschedule = "http://localhost:3000/api/trainschedule";
         let api_livetrain = "http://localhost:3000/api/livetrain";
         let displayList = [];
 
-        getData(api_trainschedule)
+        getData(api_livetrain + "/17836976/13672490")
           .then((myJson) => {
-            console.dir(myJson);
-            document.getElementById("dom").innerHTML = displayList.join("");
+            currentTrainRoute = myJson
+            for (const station of myJson){
+              if(station.latLong){
+                const lat = station.latLong.latitude
+                const long = station.latLong.longitude
+                L.marker([lat, long]).addTo(map);
+              }
+            }
           })
-          .catch(() => console.log("Json not working"));
+          .catch(err => console.log("Error: " + err));
+
       })();
 
     </script>
