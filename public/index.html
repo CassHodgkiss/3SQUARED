@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< Updated upstream
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -21,7 +20,6 @@
       </nav>
     </header>
     <div id="leafletmap" style="height: 855px;"></div>
-=======
 
 <head>
   <meta http-equiv="refresh" content="60">
@@ -66,85 +64,10 @@
     </div>
     <!--this is the map-->
     <div id="leafletmap" style="height: 600px;"></div>
->>>>>>> Stashed changes
-    <div id="dom"></div>
     <script src="leafletmap.js"></script>
-    
-    <script>
-<<<<<<< Updated upstream
-
-      var redIcon = L.icon({
-        iconUrl: '/icons/Red.png',
-        iconSize:     [20, 20], // size of the icon
-      });
-
-      var blueIcon = L.icon({
-        iconUrl: '/icons/Blue.png',
-        iconSize:     [10, 10], // size of the icon
-      });
-
-      async function getData(url) {
-        const response = await fetch(url);
-        const json = await response.json();
-        return json;
-      }
-
-      function DisplayLastLocation(schedule){
-        getData(api_livetrain + `/${schedule.activationId}/${schedule.scheduleId}`) 
-          .then((json) => {
-            const lastUpdate = json[json.length - 1]
-            if(lastUpdate){
-              if(lastUpdate.latLong){
-                const lat = lastUpdate.latLong.latitude
-                const long = lastUpdate.latLong.longitude
-                L.marker([lat, long], {icon: blueIcon}).addTo(map).on('click', (function() {
-                  let trainId = `${schedule.activationId}/${schedule.scheduleId}`
-                  DisplayTrainRoute(trainId)
-                }))
-              }
-            }
-          })
-          .catch(err => console.log("Error: " + err));
-      }
-
-      function DisplayTrainRoute(trainId){
-        getData(api_trainschedule + "/" + trainId)
-          .then((json) => {
-            currentTrainRoute = json
-            for (const station of json){
-              if(station.latLong){
-                const lat = station.latLong.latitude
-                const long = station.latLong.longitude
-                L.marker([lat, long], {icon: redIcon}).addTo(map)
-              }
-            }
-          })
-          .catch(err => console.log("Error: " + err));
-      }
-
-      let api_schedule = "http://localhost:3000/api/schedule";
-      let api_trainschedule = "http://localhost:3000/api/trainschedule";
-      let api_livetrain = "http://localhost:3000/api/livetrain";
-      let displayList = [];
-
-      getData(api_schedule)
-        .then((json) => {
-          for (let schedule of json){
-            DisplayLastLocation(schedule)
-          }
-        })
-        .catch(err => console.log("Error: " + err));
-
-    </script>
-  </body>
-</html>
-=======
-
-    </script>
 </body>
 <footer>
   <b>&copy; 2023 3Sqaured</b>
 </footer>
 
 </html>
->>>>>>> Stashed changes
