@@ -41,34 +41,35 @@ function DisplayTrainRoute(trainId) {
     for (let marker of markers){
       map.removeLayer(marker)
     }
-    console.log(schedule)
-    console.log(filtered_liveScheduleDict[trainId])
+
+    const liveSchedule = liveScheduleDict[trainId]
+    const lastUpdate = liveSchedule[liveSchedule.length - 1]
+    const trainAtStation = lastUpdate.tiploc
+    let isFuture = false
+
     for (const station of schedule) {
       if (station.latLong) {
         const lat = station.latLong.latitude
         const long = station.latLong.longitude
-        const liveData = filtered_liveScheduleDict[trainId]
-        let variation = liveData.get(station.tiploc)?.variation
-        if(!variation){
-          markers.push(L.marker([lat, long], { icon: futureIcon }).addTo(map))
+        if(!isFuture){
+          const liveData = filtered_liveScheduleDict[trainId]
+          let variation = liveData.get(station.tiploc)?.variation
+          if(!variation){
+            markers.push(L.marker([lat, long], { icon: noReportIcon }).addTo(map))
+          } else {
+            if(variation > 0) {
+              markers.push(L.marker([lat, long], { icon: lateIcon }).addTo(map))
+            }
+            else{
+              markers.push(L.marker([lat, long], { icon: earlyIcon }).addTo(map))
+            }
+          }
         } else {
-          if(variation > 0) {
-            markers.push(L.marker([lat, long], { icon: lateIcon }).addTo(map))
-          }
-          else{
-            markers.push(L.marker([lat, long], { icon: earlyIcon }).addTo(map))
-          }
+          markers.push(L.marker([lat, long], { icon: futureIcon }).addTo(map))
         }
 
       }
-    }
-  })
-}
-
-function DisplaySideBarRoute(trainId){
-  GetTrainSchedule(trainId).then(function (schedule) {
-    for (const station of schedule) {
-      //display on sidebar
+      if(station.tiploc == trainAtStation) isFuture = true
     }
   })
 }
@@ -110,7 +111,6 @@ function OnTrainClicked(trainId){
     sidebar.style.display = "block"
   }
   DisplayTrainRoute(trainId)
-  DisplaySideBarRoute(trainId)
 }
 
 var earlyIcon = L.icon({
