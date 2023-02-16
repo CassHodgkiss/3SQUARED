@@ -1,4 +1,4 @@
-var map = L.map('leafletmap').setView([55, 0], 7);
+var map = L.map('leafletmap').setView([54, -0.5], 6);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
@@ -14,11 +14,14 @@ L.tileLayer('https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png', {
 
 var markers = new Array()
 
-//train_id: schedule
+// Array: trainId: schedule | Schedules, do not get directly, use GetTrainSchedule
 var scheduleDict = {}
+// Array: trainId: trainSchedule | Train Schedule
 var trainScheduleDict = {}
-var liveScheduleDict = {}
-var filtered_liveScheduleDict = {}
+// Array: trainId: trainData | Live Train Data, Train Movements
+var liveTrainDataDict = {}
+// Array: trainId: Array: tiploc: trainData  | Live Train Data, Train Movements, Each holds a Map: tiploc: trainData
+var filtered_liveTrainDataDict = {}
 
 
 function GetTrainSchedule(trainId){
@@ -42,7 +45,7 @@ function DisplayTrainRoute(trainId) {
       map.removeLayer(marker)
     }
 
-    const liveSchedule = liveScheduleDict[trainId]
+    const liveSchedule = liveTrainDataDict[trainId]
     const lastUpdate = liveSchedule[liveSchedule.length - 1]
     const trainAtStation = lastUpdate.tiploc
     let isFuture = false
@@ -52,7 +55,7 @@ function DisplayTrainRoute(trainId) {
         const lat = station.latLong.latitude
         const long = station.latLong.longitude
         if(!isFuture){
-          const liveData = filtered_liveScheduleDict[trainId]
+          const liveData = filtered_liveTrainDataDict[trainId]
           let variation = liveData.get(station.tiploc)?.variation
           if(!variation){
             markers.push(L.marker([lat, long], { icon: noReportIcon }).addTo(map))
@@ -78,8 +81,8 @@ function DisplayTrainRoute(trainId) {
 function DisplayLiveTrainPositions(trainId) {
   getData(api_livetrain + "/" + trainId)
     .then((json) => {
-      liveScheduleDict[trainId] = json
-      filtered_liveScheduleDict[trainId] = FilterLiveTrainData(json)
+      liveTrainDataDict[trainId] = json
+      filtered_liveTrainDataDict[trainId] = FilterLiveTrainData(json)
       const lastUpdate = json[json.length - 1]
       if (lastUpdate) {
         let schedule = scheduleDict[trainId]
