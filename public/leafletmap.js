@@ -18,6 +18,7 @@ var markers = new Array()
 var scheduleDict = {}
 var trainScheduleDict = {}
 var liveScheduleDict = {}
+var filtered_liveScheduleDict = {}
 
 
 function GetTrainSchedule(trainId){
@@ -40,12 +41,25 @@ function DisplayTrainRoute(trainId) {
     for (let marker of markers){
       map.removeLayer(marker)
     }
+    console.log(schedule)
+    console.log(filtered_liveScheduleDict[trainId])
     for (const station of schedule) {
       if (station.latLong) {
         const lat = station.latLong.latitude
         const long = station.latLong.longitude
-        //change based on variance
-        markers.push(L.marker([lat, long], { icon: blueIcon }).addTo(map))
+        const liveData = filtered_liveScheduleDict[trainId]
+        let variation = liveData.get(station.tiploc)?.variation
+        if(!variation){
+          markers.push(L.marker([lat, long], { icon: futureIcon }).addTo(map))
+        } else {
+          if(variation > 0) {
+            markers.push(L.marker([lat, long], { icon: lateIcon }).addTo(map))
+          }
+          else{
+            markers.push(L.marker([lat, long], { icon: earlyIcon }).addTo(map))
+          }
+        }
+
       }
     }
   })
@@ -53,9 +67,6 @@ function DisplayTrainRoute(trainId) {
 
 function DisplaySideBarRoute(trainId){
   GetTrainSchedule(trainId).then(function (schedule) {
-    //console.log(schedule)
-    //console.log(liveScheduleDict[trainId])
-    //console.log(scheduleDict[trainId])
     for (const station of schedule) {
       //display on sidebar
     }
@@ -67,6 +78,7 @@ function DisplayLiveTrainPositions(trainId) {
   getData(api_livetrain + "/" + trainId)
     .then((json) => {
       liveScheduleDict[trainId] = json
+      filtered_liveScheduleDict[trainId] = FilterLiveTrainData(json)
       const lastUpdate = json[json.length - 1]
       if (lastUpdate) {
         let schedule = scheduleDict[trainId]
@@ -74,12 +86,20 @@ function DisplayLiveTrainPositions(trainId) {
           if(!(lastUpdate.tiploc == schedule.destinationTiploc)) {
             const lat = lastUpdate.latLong.latitude
             const long = lastUpdate.latLong.longitude
-            L.marker([lat, long], { icon: redIcon }).addTo(map).on('click', function() { OnTrainClicked(trainId) })
+            L.marker([lat, long], { icon: trainIcon }).addTo(map).on('click', function() { OnTrainClicked(trainId) })
           }
         }
       }
     })
     .catch(err => console.log("Error: " + err));  
+}
+
+function FilterLiveTrainData(trainData){
+  var dict = new Map()
+  for (let data of trainData){
+    dict.set(data.tiploc, data)
+  }
+  return dict
 }
 
 function OnTrainClicked(trainId){
@@ -93,15 +113,25 @@ function OnTrainClicked(trainId){
   DisplaySideBarRoute(trainId)
 }
 
-// blue = route
-var blueIcon = L.icon({
-  iconUrl: '/icons/Blue.png',
-  iconSize: [15, 15], // size of the icon
+var earlyIcon = L.icon({
+  iconUrl: '/icons/Early.png',
+  iconSize: [20, 20],
 });
-// red = stations
-var redIcon = L.icon({
-  iconUrl: '/icons/Red.png',
-  iconSize: [50, 50], // size of the icon
+var lateIcon = L.icon({
+  iconUrl: '/icons/Late.png',
+  iconSize: [20, 20],
+});
+var futureIcon = L.icon({
+  iconUrl: '/icons/Future.png',
+  iconSize: [20, 20],
+});
+var noReportIcon = L.icon({
+  iconUrl: '/icons/NoReport.png',
+  iconSize: [20, 20],
+});
+var trainIcon = L.icon({
+  iconUrl: '/icons/Train.png',
+  iconSize: [50, 50],
 });
 
 async function getData(url) {
