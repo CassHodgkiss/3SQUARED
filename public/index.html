@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< Updated upstream
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,9 +21,57 @@
       </nav>
     </header>
     <div id="leafletmap" style="height: 855px;"></div>
+=======
+
+<head>
+  <meta http-equiv="refresh" content="60">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <title>Trains</title>
+</head>
+
+<body>
+  <header>
+
+    <nav>
+      <a href="/"><img src="https://3squared.com/wp-content/themes/ep-morris/assets/images/3Squared-Logo-white.png"></a>
+
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <!--this is the sidebar-->
+  <div id="map-container">
+    <div id="sidebar">
+      <h1>Train Information</h1>
+      <button id="button-Progress">Progress</button>
+      <button>Consist</button>
+      <button id="button-Notes">Notes</button>
+      <!--this is the info that i will grab from the api and output on the sidebar-->
+      <div id="hide-train">
+        <Label>RANDOM INFO</Label>
+      </div>
+      <!--this is the notes-->
+      <div id="hide">
+        <label>Notes</label>
+        <input type="text" />
+      </div>
+    </div>
+    <!--this is the map-->
+    <div id="leafletmap" style="height: 600px;"></div>
+>>>>>>> Stashed changes
     <div id="dom"></div>
     <script src="leafletmap.js"></script>
+    
     <script>
+<<<<<<< Updated upstream
 
       var redIcon = L.icon({
         iconUrl: '/icons/Red.png',
@@ -89,3 +138,13 @@
     </script>
   </body>
 </html>
+=======
+
+    </script>
+</body>
+<footer>
+  <b>&copy; 2023 3Sqaured</b>
+</footer>
+
+</html>
+>>>>>>> Stashed changes
