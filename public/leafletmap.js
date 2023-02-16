@@ -44,6 +44,7 @@ function DisplayTrainRoute(trainId) {
       if (station.latLong) {
         const lat = station.latLong.latitude
         const long = station.latLong.longitude
+        //change based on variance
         markers.push(L.marker([lat, long], { icon: blueIcon }).addTo(map))
       }
     }
@@ -52,9 +53,9 @@ function DisplayTrainRoute(trainId) {
 
 function DisplaySideBarRoute(trainId){
   GetTrainSchedule(trainId).then(function (schedule) {
-    console.log(schedule)
-    console.log(liveScheduleDict[trainId])
-    console.log(scheduleDict[trainId])
+    //console.log(schedule)
+    //console.log(liveScheduleDict[trainId])
+    //console.log(scheduleDict[trainId])
     for (const station of schedule) {
       //display on sidebar
     }
