@@ -1,5 +1,6 @@
 import express, { json } from 'express';
 import fetch from 'node-fetch';
+import fs from 'fs';
 
 const app = express();
 
@@ -8,6 +9,9 @@ app.use(express.static("./public"));
 app.use(json())
 
 const PORT = process.env.PORT || 3000;
+
+let schedule = await GetSchedule()
+fs.writeFile("schedule.json", JSON.stringify(schedule), (function (err) {}))
 
 async function GetSchedule() {
     

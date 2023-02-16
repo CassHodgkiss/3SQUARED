@@ -16,18 +16,19 @@ var markers = new Array()
 
 //train_id: schedule
 var scheduleDict = {}
+var trainScheduleDict = {}
+var liveScheduleDict = {}
 
-var currentLiveSchedule = new Array()
 
 function GetTrainSchedule(trainId){
   return new Promise(function(_callback){
-    if(trainId in scheduleDict){
-      _callback(scheduleDict[trainId])
+    if(trainId in trainScheduleDict){
+      _callback(trainScheduleDict[trainId])
     } else {
       getData(api_trainschedule + "/" + trainId)
         .then((json) => {
-          scheduleDict[trainId] = json
-          _callback(scheduleDict[trainId])
+          trainScheduleDict[trainId] = json
+          _callback(trainScheduleDict[trainId])
         })
         .catch(err => console.log("Error: " + err));
     }
@@ -51,6 +52,9 @@ function DisplayTrainRoute(trainId) {
 
 function DisplaySideBarRoute(trainId){
   GetTrainSchedule(trainId).then(function (schedule) {
+    console.log(schedule)
+    console.log(liveScheduleDict[trainId])
+    console.log(scheduleDict[trainId])
     for (const station of schedule) {
       //display on sidebar
     }
@@ -58,16 +62,19 @@ function DisplaySideBarRoute(trainId){
 }
 
 //display last location
-function DisplayLastLocation(schedule) {
-  let trainId = `${schedule.activationId}/${schedule.scheduleId}`
+function DisplayLiveTrainPositions(trainId) {
   getData(api_livetrain + "/" + trainId)
     .then((json) => {
+      liveScheduleDict[trainId] = json
       const lastUpdate = json[json.length - 1]
       if (lastUpdate) {
+        let schedule = scheduleDict[trainId]
         if (lastUpdate.latLong) {
-          const lat = lastUpdate.latLong.latitude
-          const long = lastUpdate.latLong.longitude
-          L.marker([lat, long], { icon: redIcon }).addTo(map).on('click', function() { OnTrainClicked(trainId) })
+          if(!(lastUpdate.tiploc == schedule.destinationTiploc)) {
+            const lat = lastUpdate.latLong.latitude
+            const long = lastUpdate.latLong.longitude
+            L.marker([lat, long], { icon: redIcon }).addTo(map).on('click', function() { OnTrainClicked(trainId) })
+          }
         }
       }
     })
@@ -143,9 +150,10 @@ let api_livetrain = "http://localhost:3000/api/livetrain";
 
 getData(api_schedule)
   .then((json) => {
-    currentLiveSchedule = json
     for (let schedule of json) {
-      DisplayLastLocation(schedule)
+      let trainId = `${schedule.activationId}/${schedule.scheduleId}`
+      scheduleDict[trainId] = schedule
+      DisplayLiveTrainPositions(trainId)
     }
   })
   .catch(err => console.log("Error: " + err));
