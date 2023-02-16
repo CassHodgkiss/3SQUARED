@@ -52,7 +52,7 @@ function DisplayTrainRoute(trainId) {
 function DisplaySideBarRoute(trainId){
   GetTrainSchedule(trainId).then(function (schedule) {
     for (const station of schedule) {
-      console.log(station)
+      //display on sidebar
     }
   })
 }
